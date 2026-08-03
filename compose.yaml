@@ -1,0 +1,60 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-fintrack}
+      POSTGRES_USER: ${DB_USERNAME:-fintrack}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fintrack -d fintrack"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: .
+      target: production
+    environment:
+      APP_NAME: ${APP_NAME:-FinTrack}
+      APP_ENV: ${APP_ENV:-local}
+      APP_KEY: ${APP_KEY}
+      APP_DEBUG: ${APP_DEBUG:-true}
+      APP_URL: ${APP_URL:-http://localhost:8000}
+      FRONTEND_URLS: ${FRONTEND_URLS:-http://localhost:5173,http://localhost:8000}
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: ${DB_DATABASE:-fintrack}
+      DB_USERNAME: ${DB_USERNAME:-fintrack}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_SCHEMA: public
+      DB_SSLMODE: prefer
+      RUN_MIGRATIONS: "true"
+    ports:
+      - "127.0.0.1:${APP_PORT:-8000}:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend-dev:
+    image: node:22-alpine
+    working_dir: /app
+    command: sh -c "npm install --no-audit --no-fund && npm run dev"
+    environment:
+      VITE_API_URL: /api
+      VITE_PROXY_TARGET: http://app
+    volumes:
+      - ./frontend:/app
+      - frontend_node_modules:/app/node_modules
+    ports:
+      - "127.0.0.1:${FRONTEND_PORT:-5173}:5173"
+    profiles: ["dev"]
+    depends_on:
+      - app
+
+volumes:
+  postgres_data:
+  frontend_node_modules:

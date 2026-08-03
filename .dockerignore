@@ -1,0 +1,11 @@
+.git
+.github
+.env
+**/.env
+backend/vendor
+backend/bootstrap/cache/*.php
+frontend/node_modules
+frontend/dist
+coverage
+work
+outputs
