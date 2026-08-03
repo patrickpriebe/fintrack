@@ -34,97 +34,46 @@ GitHub
 └── Dockerfile                      # imagem local com frontend + backend
 ```
 
-## Executar localmente
+## 📸 Telas principais do sistema
 
-Crie o arquivo de configuração a partir do exemplo:
+As capturas do dashboard, dos gráficos, dos lançamentos e dos calendários serão adicionadas nesta seção.
 
-```powershell
-Copy-Item .env.example .env
-```
+<!-- Adicione aqui as capturas das principais telas do FinTrack. -->
 
-Preencha `APP_KEY` com uma chave Laravel e use uma senha local em `DB_PASSWORD`. Depois execute:
+## 🏗️ Arquitetura, infraestrutura e stack
 
-```powershell
-docker-compose up --build -d
-```
+O FinTrack foi construído como uma aplicação full-stack enxuta, com separação clara entre interface, API e persistência de dados. A arquitetura prioriza organização, manutenibilidade e uma experiência de uso simples e responsiva.
 
-A aplicação fica disponível em [http://localhost:8000](http://localhost:8000).
+**React 19 & Vite:** Interface componentizada, responsiva e otimizada para carregamento rápido, com gerenciamento dos lançamentos e atualização dinâmica dos indicadores financeiros.
 
-```powershell
-docker-compose ps
-docker-compose down
-```
+**Laravel 12 & PHP:** API REST responsável pelas regras de negócio, validação dos dados, cálculos financeiros e comunicação segura com o banco de dados.
 
-Não use `docker-compose down -v` se quiser preservar os dados locais.
+**PostgreSQL & Supabase:** Persistência dos lançamentos em banco relacional hospedado no Supabase, utilizando um schema privado dedicado à aplicação.
 
-## Publicar no GitHub
+**Vercel & Render:** Hospedagem independente do frontend e do backend, permitindo deploy contínuo e atualização automática a cada nova versão publicada.
 
-Crie um repositório vazio no GitHub e publique a branch `main`:
+**Docker & Docker Compose:** Padronização do ambiente local e da imagem de produção, reduzindo diferenças entre desenvolvimento, testes e hospedagem.
 
-```powershell
-git init -b main
-git add .
-git commit -m "feat: prepara FinTrack para deploy"
-git remote add origin https://github.com/SEU_USUARIO/fintrack.git
-git push -u origin main
-```
+**GitHub Actions:** Pipeline de integração contínua responsável por validar testes, builds e a imagem Docker antes da publicação.
 
-Arquivos `.env`, dependências, builds e dados locais estão ignorados pelo Git.
+## 🚀 Domínios da aplicação
 
-## Banco no Supabase
+**Gestão de lançamentos:** Cadastro e exclusão de receitas e despesas com descrição, categoria, valor e data.
 
-1. Crie um projeto no Supabase.
-2. Abra **SQL Editor** e execute [supabase/setup.sql](supabase/setup.sql).
-3. Em **Connect**, selecione o **Session pooler** e anote host, porta, banco e usuário.
-4. No Render, informe a senha do banco somente na variável protegida `DB_PASSWORD`.
+**Visão financeira mensal:** Consulta por período com totais de receitas, despesas e saldo disponível no mês selecionado.
 
-O Laravel usa o schema privado `fintrack`, que não é exposto pela Data API pública do Supabase.
+**Análises e gráficos:** Comparativo visual entre entradas e saídas, distribuição das despesas por categoria e geração de insights financeiros.
 
-## Backend no Render
+**Experiência responsiva:** Interface adaptada para desktop e dispositivos móveis, com seletores, calendários personalizados e feedbacks visuais padronizados.
 
-1. Conecte o Render ao mesmo repositório GitHub.
-2. Crie um serviço usando o Blueprint [render.yaml](render.yaml).
-3. Preencha as variáveis solicitadas:
+**Integração full-stack:** Comunicação entre React e a API Laravel, persistência no PostgreSQL e atualização dos dados sem recarregar a página.
 
-| Variável | Valor |
-|---|---|
-| `APP_KEY` | chave Laravel no formato `base64:...` |
-| `APP_URL` | URL final do backend no Render |
-| `FRONTEND_URLS` | URL final do frontend na Vercel |
-| `DB_PASSWORD` | senha do banco no Supabase |
+## 🌐 Aplicação publicada
 
-O serviço executa as migrations automaticamente e usa `/api/health` como verificação de saúde.
+🔗 [Acessar o FinTrack](https://fintrack-ui-tan.vercel.app) | ⚙️ [API do FinTrack](https://fintrack-api-08b9.onrender.com)
 
-## Frontend na Vercel
+## 👨‍💻 Desenvolvido por Patrick Priebe
 
-1. Importe o mesmo repositório GitHub na Vercel.
-2. Configure **Root Directory** como `frontend`.
-3. Adicione a variável:
+Desenvolvedor de Software, apaixonado por código limpo, arquitetura back-end e interfaces que fogem do comum.
 
-```text
-VITE_API_URL=https://SUA-API.onrender.com/api
-```
-
-4. Faça o deploy e copie a URL final.
-5. Atualize `FRONTEND_URLS` no Render com essa URL e faça um novo deploy do backend.
-
-Após isso, pushes na `main` atualizam automaticamente Vercel e Render. O GitHub Actions valida testes e builds antes da integração.
-
-## Endpoints principais
-
-| Método | Endpoint | Uso |
-|---|---|---|
-| `GET` | `/api/health` | saúde da API |
-| `GET` | `/api/transactions?month=2026-08` | lançamentos do mês |
-| `POST` | `/api/transactions` | criar lançamento |
-| `PUT` | `/api/transactions/{id}` | atualizar lançamento |
-| `DELETE` | `/api/transactions/{id}` | excluir lançamento |
-| `GET` | `/api/dashboard?month=2026-08` | totais e categorias |
-
-## Variáveis do frontend
-
-Consulte [frontend/.env.example](frontend/.env.example).
-
-## Variáveis do backend
-
-Consulte [backend/.env.example](backend/.env.example). Nunca publique chaves reais ou a conexão do Supabase no repositório.
+🔗 [LinkedIn](https://www.linkedin.com/in/patrickpriebe/) | 💻 [GitHub](https://github.com/patrickpriebe)
