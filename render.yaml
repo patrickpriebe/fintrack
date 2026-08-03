@@ -21,7 +21,15 @@ services:
         sync: false
       - key: DB_CONNECTION
         value: pgsql
-      - key: DB_URL
+      - key: DB_HOST
+        value: aws-1-us-west-2.pooler.supabase.com
+      - key: DB_PORT
+        value: "5432"
+      - key: DB_DATABASE
+        value: postgres
+      - key: DB_USERNAME
+        value: postgres.yunysypofpoegvquffag
+      - key: DB_PASSWORD
         sync: false
       - key: DB_SCHEMA
         value: fintrack

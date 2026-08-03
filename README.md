@@ -75,8 +75,8 @@ Arquivos `.env`, dependências, builds e dados locais estão ignorados pelo Git.
 
 1. Crie um projeto no Supabase.
 2. Abra **SQL Editor** e execute [supabase/setup.sql](supabase/setup.sql).
-3. Em **Connect**, copie a string de conexão do **Session pooler**, na porta `5432`.
-4. Guarde essa string para a variável `DB_URL` do Render.
+3. Em **Connect**, selecione o **Session pooler** e anote host, porta, banco e usuário.
+4. No Render, informe a senha do banco somente na variável protegida `DB_PASSWORD`.
 
 O Laravel usa o schema privado `fintrack`, que não é exposto pela Data API pública do Supabase.
 
@@ -91,7 +91,7 @@ O Laravel usa o schema privado `fintrack`, que não é exposto pela Data API pú
 | `APP_KEY` | chave Laravel no formato `base64:...` |
 | `APP_URL` | URL final do backend no Render |
 | `FRONTEND_URLS` | URL final do frontend na Vercel |
-| `DB_URL` | Session pooler do Supabase |
+| `DB_PASSWORD` | senha do banco no Supabase |
 
 O serviço executa as migrations automaticamente e usa `/api/health` como verificação de saúde.
 
