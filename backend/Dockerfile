@@ -36,7 +36,7 @@ COPY backend/ ./
 COPY --from=vendor /app/vendor ./vendor
 COPY docker/entrypoint.sh /usr/local/bin/fintrack-entrypoint
 
-RUN mkdir -p bootstrap/cache \
+RUN mkdir -p bootstrap/cache storage/framework/cache storage/framework/sessions storage/framework/views storage/logs \
     && chmod +x /usr/local/bin/fintrack-entrypoint \
     && chown -R www-data:www-data storage bootstrap/cache
 
