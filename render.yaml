@@ -16,9 +16,9 @@ services:
       - key: APP_KEY
         sync: false
       - key: APP_URL
-        sync: false
+        value: https://fintrack-api-08b9.onrender.com
       - key: FRONTEND_URLS
-        sync: false
+        value: https://fintrack-ui-tan.vercel.app
       - key: DB_CONNECTION
         value: pgsql
       - key: DB_HOST

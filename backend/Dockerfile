@@ -12,6 +12,7 @@ RUN composer install \
     --no-scripts
 
 COPY backend/ ./
+RUN mkdir -p bootstrap/cache storage/framework/cache storage/framework/sessions storage/framework/views
 RUN composer run-script post-autoload-dump
 
 FROM php:8.3-apache AS production
