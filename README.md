@@ -18,9 +18,6 @@ GitHub
 - interface responsiva com calendários personalizados;
 - testes automatizados de frontend e backend.
 
-> [!WARNING]
-> A aplicação ainda não possui autenticação. Em uma publicação pública, use apenas dados demonstrativos até implementar usuários e autorização por lançamento.
-
 ## Estrutura
 
 ```text
