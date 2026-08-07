@@ -33,9 +33,11 @@ GitHub
 
 ## 📸 Telas principais do sistema
 
-As capturas do dashboard, dos gráficos, dos lançamentos e dos calendários serão adicionadas nesta seção.
-
-<!-- Adicione aqui as capturas das principais telas do FinTrack. -->
+|                     Receitas e Despesas                      |                     Análise do mês                    |
+|:---------------------------------------------------------:|:-----------------------------------------------------:|
+| ![Receitas e Despesas](frontend/docs/screenshots/fintrack1.png)      | ![Análise do mês](frontend/docs/screenshots/fintrack2.png)               |
+|                    Despesas                   |                **Receitas**            |
+| ![Despesas](frontend/docs/screenshots/fintrack3.png)| ![Receitas](frontend/docs/screenshots/fintrack4.png)     |
 
 ## 🏗️ Arquitetura, infraestrutura e stack
 
