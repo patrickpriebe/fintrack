@@ -67,10 +67,6 @@ O FinTrack foi construído como uma aplicação full-stack enxuta, com separaç�
 
 **Integração full-stack:** Comunicação entre React e a API Laravel, persistência no PostgreSQL e atualização dos dados sem recarregar a página.
 
-## 🌐 Aplicação publicada
-
-🔗 [Acessar o FinTrack](https://fintrack-ui-tan.vercel.app) | ⚙️ [API do FinTrack](https://fintrack-api-08b9.onrender.com)
-
 ## 👨‍💻 Desenvolvido por Patrick Priebe
 
 Desenvolvedor de Software, apaixonado por código limpo, arquitetura back-end e interfaces que fogem do comum.
