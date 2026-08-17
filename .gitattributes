@@ -1,8 +1,20 @@
+# Normalise line endings so the repo behaves identically across Windows, Linux and macOS.
 * text=auto eol=lf
 
-*.png binary
-*.jpg binary
+# Scripts that run inside Linux containers MUST keep LF to avoid "/bin/bash^M: bad interpreter".
+*.sh   text eol=lf
+
+# Windows-specific scripts keep CRLF.
+*.bat  text eol=crlf
+*.cmd  text eol=crlf
+*.ps1  text eol=crlf
+
+# Binaries
+*.png  binary
+*.jpg  binary
 *.jpeg binary
-*.gif binary
+*.gif  binary
 *.webp binary
-*.zip binary
+*.ico  binary
+*.zip  binary
+*.phar binary

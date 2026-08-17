@@ -1,0 +1,41 @@
+# =============================================================================
+# Mantém o backend do Render acordado em horário útil.
+#
+# No plano gratuito do Render, web services entram em modo de suspensão após
+# 15 minutos sem receber tráfego HTTP. O primeiro acesso após hibernar leva
+# de 30 a 50 segundos para subir a JVM/PHP e responder (cold start).
+#
+# A conta de horas de instância
+# -----------------------------
+# O Render oferece 750 horas gratuitas de instância por mês por workspace.
+# Executando das 12h às 18h59 UTC (9h às 15h59 em Brasília) nos dias úteis:
+# ~7 horas/dia * 22 dias = ~154 horas/mês (bastante seguro e bem abaixo do teto de 750h).
+# =============================================================================
+
+name: manter acordado
+
+on:
+  schedule:
+    # A cada 10 minutos, das 12h às 18h59 UTC (9h às 15h59 BRT)
+    - cron: '*/10 12-18 * * 1-5'
+  workflow_dispatch:
+
+concurrency:
+  group: keep-awake
+  cancel-in-progress: true
+
+jobs:
+  ping:
+    name: acordar o backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Healthcheck da API
+        run: |
+          url="https://fintrack-api-08b9.onrender.com/api/health"
+          codigo=$(curl -s -o /dev/null -w '%{http_code}' --max-time 60 "$url" || echo "000")
+
+          if [ "$codigo" = "200" ]; then
+            echo "ok -> API respondeu 200"
+          else
+            echo "::warning::API respondeu $codigo"
+          fi

@@ -1,11 +1,22 @@
+# =============================================================================
+# Render Blueprint: FinTrack API Infrastructure as Code
+#
+# Apply: In Render Dashboard, select New > Blueprint and point to this repository.
+#
+# Sensitive variables use `sync: false` so they are prompted securely in the
+# Render dashboard and never stored in git.
+# =============================================================================
+
 services:
   - type: web
     name: fintrack-api
     runtime: docker
     plan: free
+    region: oregon
     dockerfilePath: ./backend/Dockerfile
     dockerContext: .
     healthCheckPath: /api/health
+    autoDeploy: true
     envVars:
       - key: APP_NAME
         value: FinTrack

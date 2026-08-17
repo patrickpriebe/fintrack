@@ -1,22 +1,44 @@
+# =============================================================================
+# FinTrack - Local Development Stack
+#
+#   docker compose up -d              Starts PostgreSQL and the production-like app
+#   docker compose --profile dev up -d Starts PostgreSQL, the API, and Vite dev server
+#   docker compose down               Stops all services, preserves database volume
+#   docker compose down -v            Stops all services, wipes database volume
+# =============================================================================
+name: fintrack
+
 services:
+  # ---------------------------------------------------------------------------
+  # PostgreSQL - Local database matching Supabase's PostgreSQL 16 engine.
+  # ---------------------------------------------------------------------------
   postgres:
     image: postgres:16-alpine
+    container_name: fintrack-postgres
+    restart: unless-stopped
     environment:
       POSTGRES_DB: ${DB_DATABASE:-fintrack}
       POSTGRES_USER: ${DB_USERNAME:-fintrack}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-fintrack}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "${DB_PORT:-5432}:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U fintrack -d fintrack"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-fintrack} -d ${DB_DATABASE:-fintrack}"]
       interval: 5s
       timeout: 5s
       retries: 10
 
+  # ---------------------------------------------------------------------------
+  # Production-like container running Laravel API with Apache.
+  # ---------------------------------------------------------------------------
   app:
     build:
       context: .
       target: production
+    container_name: fintrack-app
+    restart: unless-stopped
     environment:
       APP_NAME: ${APP_NAME:-FinTrack}
       APP_ENV: ${APP_ENV:-local}
@@ -29,7 +51,7 @@ services:
       DB_PORT: 5432
       DB_DATABASE: ${DB_DATABASE:-fintrack}
       DB_USERNAME: ${DB_USERNAME:-fintrack}
-      DB_PASSWORD: ${DB_PASSWORD}
+      DB_PASSWORD: ${DB_PASSWORD:-fintrack}
       DB_SCHEMA: public
       DB_SSLMODE: prefer
       RUN_MIGRATIONS: "true"
@@ -39,8 +61,13 @@ services:
       postgres:
         condition: service_healthy
 
+  # ---------------------------------------------------------------------------
+  # Frontend development server with Vite hot-module-replacement (HMR).
+  # Run with: docker compose --profile dev up -d
+  # ---------------------------------------------------------------------------
   frontend-dev:
     image: node:22-alpine
+    container_name: fintrack-frontend-dev
     working_dir: /app
     command: sh -c "npm install --no-audit --no-fund && npm run dev"
     environment:

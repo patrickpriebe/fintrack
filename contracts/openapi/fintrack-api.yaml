@@ -1,0 +1,366 @@
+openapi: 3.0.3
+info:
+  title: FinTrack API
+  version: 1.0.0
+  description: |
+    REST API for the FinTrack personal finance dashboard.
+    Provides endpoints for transaction management, monthly financial aggregation and health checks.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:8000/api
+    description: Local development environment
+  - url: https://fintrack-api-08b9.onrender.com/api
+    description: Production environment (Render)
+
+paths:
+  /health:
+    get:
+      summary: Health check probe
+      description: Returns service availability status and application name for orchestrators and uptime monitors.
+      operationId: getHealth
+      tags:
+        - System
+      responses:
+        '200':
+          description: Service is healthy and operational
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /dashboard:
+    get:
+      summary: Get monthly dashboard metrics
+      description: Calculates aggregated income, expense, net balance and breakdown of expenses by category for a specific month.
+      operationId: getDashboard
+      tags:
+        - Dashboard
+      parameters:
+        - name: month
+          in: query
+          required: true
+          description: Target month in YYYY-MM format
+          schema:
+            type: string
+            pattern: '^\d{4}-\d{2}$'
+            example: '2026-08'
+      responses:
+        '200':
+          description: Monthly metrics calculated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DashboardData'
+        '422':
+          description: Validation error (missing or malformed month parameter)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+
+  /transactions:
+    get:
+      summary: List transactions
+      description: Retrieves list of transactions ordered by date and creation time descending, optionally filtered by month.
+      operationId: listTransactions
+      tags:
+        - Transactions
+      parameters:
+        - name: month
+          in: query
+          required: false
+          description: Filter transactions by month (YYYY-MM)
+          schema:
+            type: string
+            pattern: '^\d{4}-\d{2}$'
+            example: '2026-08'
+      responses:
+        '200':
+          description: List of transactions
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Transaction'
+        '422':
+          description: Validation error (malformed month query parameter)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+    post:
+      summary: Create transaction
+      description: Records a new income or expense transaction in the PostgreSQL database.
+      operationId: createTransaction
+      tags:
+        - Transactions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionRequest'
+      responses:
+        '201':
+          description: Transaction created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Transaction'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+
+  /transactions/{id}:
+    get:
+      summary: Get transaction by ID
+      description: Retrieves a single transaction record by its primary key.
+      operationId: getTransactionById
+      tags:
+        - Transactions
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Transaction identifier
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Transaction found
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Transaction'
+        '404':
+          description: Transaction not found
+    put:
+      summary: Update transaction
+      description: Updates all editable fields of an existing transaction record.
+      operationId: updateTransaction
+      tags:
+        - Transactions
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Transaction identifier
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionRequest'
+      responses:
+        '200':
+          description: Transaction updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Transaction'
+        '404':
+          description: Transaction not found
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+    delete:
+      summary: Delete transaction
+      description: Permanently removes a transaction record from the database.
+      operationId: deleteTransaction
+      tags:
+        - Transactions
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Transaction identifier
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Transaction successfully deleted
+        '404':
+          description: Transaction not found
+
+components:
+  schemas:
+    HealthResponse:
+      type: object
+      required:
+        - status
+        - service
+      properties:
+        status:
+          type: string
+          example: 'ok'
+        service:
+          type: string
+          example: 'FinTrack'
+
+    Transaction:
+      type: object
+      required:
+        - id
+        - type
+        - category
+        - amount
+        - occurred_on
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: integer
+          example: 1
+        type:
+          type: string
+          enum: [income, expense]
+          example: 'expense'
+        category:
+          type: string
+          example: 'Alimentação'
+        description:
+          type: string
+          nullable: true
+          example: 'Supermercado mensal'
+        amount:
+          type: string
+          example: '250.75'
+          description: Formatted decimal string with 2 decimal places.
+        occurred_on:
+          type: string
+          format: date
+          example: '2026-08-17'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    TransactionRequest:
+      type: object
+      required:
+        - type
+        - category
+        - amount
+        - occurred_on
+      properties:
+        type:
+          type: string
+          enum: [income, expense]
+          example: 'expense'
+        category:
+          type: string
+          maxLength: 50
+          example: 'Moradia'
+        description:
+          type: string
+          maxLength: 255
+          nullable: true
+          example: 'Conta de energia elétrica'
+        amount:
+          type: number
+          minimum: 0.01
+          example: 189.90
+          description: Numeric amount greater than 0 with at most 2 decimal places.
+        occurred_on:
+          type: string
+          format: date
+          example: '2026-08-15'
+
+    ExpenseByCategory:
+      type: object
+      required:
+        - category
+        - total
+      properties:
+        category:
+          type: string
+          example: 'Moradia'
+        total:
+          type: number
+          example: 1250.00
+
+    DashboardData:
+      type: object
+      required:
+        - period
+        - income
+        - expense
+        - balance
+        - expenses_by_category
+      properties:
+        period:
+          type: string
+          example: '2026-08'
+        income:
+          type: number
+          example: 5000.00
+        expense:
+          type: number
+          example: 2250.50
+        balance:
+          type: number
+          example: 2749.50
+        expenses_by_category:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExpenseByCategory'
+
+    ValidationError:
+      type: object
+      required:
+        - message
+        - errors
+      properties:
+        message:
+          type: string
+          example: 'The given data was invalid.'
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+          example:
+            amount:
+              - 'The amount field must have between 0 and 2 decimal places.'
+            type:
+              - 'The selected type is invalid.'

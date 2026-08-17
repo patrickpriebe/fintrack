@@ -1,9 +1,34 @@
+# Environment & Secrets
 .env
 .env.*
 !.env.example
+*.key
+*.pem
+
+# IDE & Editor caches
 .idea/
 .vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# Testing & Coverage
 .phpunit.cache/
+.phpunit.result.cache
+coverage/
+*.clover
+coverage.xml
+
+# Backend (PHP / Laravel)
+backend/.env
+backend/.env.*
+!backend/.env.example
 backend/.phpunit.result.cache
 backend/bootstrap/cache/*.php
 backend/vendor/
@@ -12,8 +37,16 @@ backend/storage/framework/cache/data/*
 backend/storage/framework/sessions/*
 backend/storage/framework/views/*
 backend/storage/logs/*
+
+# Frontend (Node / Vite)
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
 frontend/node_modules/
 frontend/dist/
-coverage/
-/work/*
-/outputs/*
+frontend/.vite/
+
+# Local work and temporary files
+work/
+outputs/
+*.log

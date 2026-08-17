@@ -1,0 +1,20 @@
+# Lint configuration for FinTrack OpenAPI contracts.
+#
+#   npx @redocly/cli lint contracts/openapi/fintrack-api.yaml
+#   npx @redocly/cli preview-docs contracts/openapi/fintrack-api.yaml
+
+extends:
+  - recommended
+
+rules:
+  # Security schemes are planned for Phase 3 (OAuth/OIDC auth).
+  security-defined: off
+
+  # The only server declared is localhost / production render url:
+  no-server-example.com: off
+
+  # MIT license without a direct URL is standard for portfolio repositories:
+  info-license-strict: off
+
+  # Health and simple list endpoints do not require artificial 4xx definitions:
+  operation-4xx-response: off
