@@ -46,6 +46,10 @@ jobs:
           coverage: xdebug
           tools: composer:v2
 
+      - name: Ensure Laravel directories exist
+        working-directory: backend
+        run: mkdir -p bootstrap/cache storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs
+
       - name: Cache Composer dependencies
         uses: actions/cache@v4
         with:
